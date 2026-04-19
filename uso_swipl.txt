@@ -1,0 +1,5 @@
+emacs.		-> Abre o emacs personalizado
+['arq.pl'].	-> Carrega as regras do arquivo
+halt.		-> Sai do swipl
+;			-> Continua a consulta, mostrando o proximo resultado
+make.		-> Atualiza as regras caregadas dos arquivos que foram modificados
