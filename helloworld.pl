@@ -1,2 +1,2 @@
 helloworld :-
-    write("hello, World!"), nl.
+	write("hello, World!"), nl.

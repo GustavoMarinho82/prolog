@@ -6,6 +6,6 @@ potencia(_, 0, 1) :- !. % Caso o expoente seja 0, essa declaracao da regra eh ex
 
 % B = base; E = expoente; R = resultado
 potencia(B, E, R) :-
-    E2 is E - 1,			% E2 = E-1
-    potencia(B, E2, R2),	% Faz a recursao de potencia com o novo expoente e salva o resultado em R2
-    R is B * R2.			% R = B * B^(E-1)
+	E2 is E - 1,			% E2 = E-1
+	potencia(B, E2, R2),	% Faz a recursao de potencia com o novo expoente e salva o resultado em R2
+	R is B * R2.			% R = B * B^(E-1)

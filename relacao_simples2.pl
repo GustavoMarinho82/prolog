@@ -12,5 +12,5 @@ matriculado(pedro, lp2, 2).		% pedro esta matriculado em lp2 turma 2
 
 % REGRA
 tem_aula_com(Aluno, Professor) :- 				% Regra para checar se um aluno tem aula com tal professor. O que acontece quando:
-    matriculado(Aluno, Disciplina, Turma),		% 1 - o aluno esta matricula em Discplina na turma Turma; e
-    disciplina(Disciplina, Professor, Turma).	% 2 - professor dá aula da Disciplina na turma Turma
+	matriculado(Aluno, Disciplina, Turma),		% 1 - o aluno esta matricula em Discplina na turma Turma; e
+	disciplina(Disciplina, Professor, Turma).	% 2 - professor dá aula da Disciplina na turma Turma
