@@ -9,40 +9,107 @@ help_derivacao :- nl,
 
 :- initialization(help_derivacao).
 
-% REGRAS
+% REGRAS DE SIMPLIFICAÇÃO BOTTOM-UP
+descer_e_simplificar(-U, ESimplificado) :-
+	!,
+    descer_e_simplificar(U, USimplificado),
+    simplificar(-USimplificado, ESimplificado).
+
+descer_e_simplificar(E, ESimplificado) :- 
+	E =.. [Operador, U, V],					% Desconstroi a expressao
+	member(Operador, [+, -, *, /, //, ^]),	% Confere se o functor de E é um dos operadores da lista
+	!,
+	descer_e_simplificar(U, USimplificado),
+	descer_e_simplificar(V, VSimplificado),
+	EIntermediario =.. [Operador, USimplificado, VSimplificado],
+	simplificar(EIntermediario, ESimplificado).
+
+% Só executa quando U é atômico ou contem um operador não listado no member acima
+descer_e_simplificar(U, U).
+
+% REGRAS DE SIMPLIFICAÇÃO MOLECULARES
+simplificar(-0, 0) :- !.
+simplificar(-(-U), U) :- !.
+
+simplificar(U * 0, 0) :- !.
+simplificar(0 * U, 0) :- !.
+
+simplificar(1 * U, U) :- !.
+simplificar(U * 1, U) :- !.
+
+simplificar(U + 0, U) :- !.
+simplificar(0 + U, U) :- !.
+
+simplificar(U - 0, U) :- !.
+simplificar(0 - U, -U) :- !.
+simplificar(U - U, 0) :- !.
+
+simplificar(U / 1, U) :- !.
+
+simplificar(U^0, 1) :- !.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Simplificar 1 + 2
+simplificar(U^X, 1 / U^Y) :- 
+	number(X),
+	X < 0,
+	!,
+	Y is -X.
+
+simplificar(U^X * U^Y, U^Z) :- 
+	number(X),
+	number(Y),
+	!,
+	Z is X + Y.
+
+simplificar(U + U, 2 * U) :- !.
+simplificar(U * U, U^2) :- !.
+
+simplificar(U, U).
+
+% REGRA PRINCIPAL
+d(U, X, DU) :-
+	derivada(U, X, DUBruto),
+	simplificar(DUBruto, DU).
+
+% REGRAS DE DERIVAÇÃO
 % Derivação de uma constante ou em relação a uma constante
-d(U, X, 0) :- 
+derivada(U, X, 0) :- 
 	( number(U) ; number(X) ),	% ( ; ) é um OU
 	!.
 
 % Derivação de uma expressão em relacao a ela mesma
-d(U, X, 1) :- 
+derivada(U, X, 1) :- 
 	atom(U), 
 	U == X, 
 	!.
 
 % Derivação de uma expressão multiplicada por uma constante C
-d(C * U, X, C * DU) :- 
+derivada(C * U, X, C * DU) :- 
 	number(C), 
 	!,
-	d(U, X, DU).
+	derivada(U, X, DU).
 
-d(U * C, X, C * DU) :- 
+derivada(U * C, X, C * DU) :- 
 	number(C),
 	!,
-	d(U, X, DU).
+	derivada(U, X, DU).
 
 % Derivação de uma soma
-d(U + V, X, DU + DV) :-
+derivada(U + V, X, DU + DV) :-
 	!,
-	d(U, X, DU),
-	d(V, X, DV).
+	derivada(U, X, DU),
+	derivada(V, X, DV).
 
 % Derivação de um produto
-d(U * V, X, V * DU + U * DV) :-
+derivada(U * V, X, (V * DU) + (U * DV)) :-
 	!,
-	d(U, X, DU),
-	d(V, X, DV).
+	derivada(U, X, DU),
+	derivada(V, X, DV).
+
+% Derivação de uma divisão
+derivada(U / V, X, (V * DU - U * DV) / V^2) :-
+	!,
+	derivada(U, X, DU),
+	derivada(V, X, DV).
 
 % Caso final, onde a expressão não é diferenciável em relação a x
-d(U, _, 0) :- atom(U), !.
+derivada(U, _, 0) :- atom(U).
